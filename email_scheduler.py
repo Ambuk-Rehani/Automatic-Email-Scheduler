@@ -3,6 +3,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import configparser
 from jinja2 import Template
+import re
+from datetime import datetime
 
 # Load the configuration file
 config = configparser.ConfigParser()
@@ -33,16 +35,39 @@ def send_email(recipient, subject, message):
         server.send_message(msg)
         
     print("Email sent successfully")
+
+def validate_email(email):
+    pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    return re.match(pattern, email) is not None
+
+def validate_date_time(date, time):
+    try:
+        datetime.strptime(date, '%Y-%m-%d')
+        datetime.strptime(time, '%H:%M')
+        return True
+    except ValueError:
+        return False
     
 def get_email_details():
     recipient = input("Recipient's Email Address: ")
     subject = input("Subject: ")
     message = input("Message: ")
+    date = input("Date (YYYY-MM-DD): ")
+    time = input("Time (HH:MM): ")
     
-    return recipient, subject, message
+    return recipient, subject, message, date, time
 
 def main():
-    recipient, subject, message = get_email_details()
+    recipient, subject, message, date, time = get_email_details()
+    
+    
+    if not validate_email(recipient):
+        print("Invalid email address format. Please enter a valid email address.")
+        return
+    
+    if not validate_date_time(date, time):
+        print("Invalid date or time format. Please enter a valid date (YYYY-MM-DD) and time (HH:MM).")
+        return
     
     # Replace placeholders in the email template with actual values
     email_body = email_template.render(
