@@ -57,6 +57,16 @@ def get_email_details():
     
     return recipient, subject, message, date, time
 
+def schedule_email(recipient, subject, message, date, time):
+    email = {
+        'recipient': recipient,
+        'subject': subject,
+        'message': message,
+        'date': date,
+        'time': time
+    }
+    scheduled_emails.append(email)
+
 def main():
     recipient, subject, message, date, time = get_email_details()
     
@@ -76,8 +86,13 @@ def main():
         message=message
     )
     
+    schedule_email(recipient, subject, email_body, date, time)
+
+    print("Email scheduled successfully.")
+    
     # Send the email
     send_email(recipient, subject, email_body)
 
 if __name__ == '__main__':
+    scheduled_emails = []
     main()
